@@ -26,7 +26,6 @@ jobs:
       matrix:
         xcode:
           - '15.4'
-          - '16.4'
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v2
@@ -39,7 +38,6 @@ jobs:
       matrix:
         xcode:    
           - '15.4'
-          - '16.4'
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v2
