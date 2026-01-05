@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name             = "TPTweak"
-  spec.version          = "3.1.1"
+  spec.version          = "4.0.0"
   spec.summary          = "TPTweak is a debugging tool to help adjust your iOS app on the fly without recompile"
 
   spec.license          = { :type => "Apache 2.0", :file => "LICENSE.md" }
@@ -10,7 +10,7 @@ Pod::Spec.new do |spec|
 
   spec.platform         = :ios, "11.0"
   spec.swift_versions   = ["5.4"]
-  spec.source           = { :git => "https://github.com/tokopedia/ios-tptweak.git", :tag => "#{spec.version}" }
+  spec.source           = { :git => "https://github.com/wendyliga/ios-tptweak.git", :tag => "#{spec.version}" }
   spec.source_files     = "Sources/TPTweak/**/*.swift"
   spec.default_subspec  = "Core"
 
