@@ -1,3 +1,12 @@
+# 4.0.0
+- support iOS 26 Liquid Glass on navigation bar and tab bar
+- adopt `UINavigationBarAppearance` for navigation bar styling instead of mutating `UINavigationBar` directly
+- extend bottom content to create overflow effect with tabbar
+- pin child view controller with auto layout instead of syncing frame on layout
+- always adjust table content inset
+- update assets to liquid glass
+- update ci to support xcode 26
+
 # 3.1.1
 - expose environment
 

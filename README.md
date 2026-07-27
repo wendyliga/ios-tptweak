@@ -27,13 +27,13 @@ https://github.com/tokopedia/ios-tptweak
 
 or manually add to your `Package.swift`
 ```swift
-.package(url: "https://github.com/tokopedia/ios-tptweak", from: "3.0.0"),
+.package(url: "https://github.com/tokopedia/ios-tptweak", from: "4.0.0"),
 ```
 
 ## Cocoapods
 add this to your `Podfile`
 ```
-pod 'TPTweak', '~> 3.0.0'
+pod 'TPTweak', '~> 4.0.0'
 ```
 
 # Development
