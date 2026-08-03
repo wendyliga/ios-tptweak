@@ -16,7 +16,26 @@
 import UIKit
 
 extension UIApplication {
-    internal class func topViewController(controller: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
+    /**
+     Window to attach TPTweak's UI into.
+
+     `keyWindow` is deprecated since iOS 13 and returns `nil` on scene based apps(including SwiftUI's `WindowGroup`),
+     so resolve the window from the active `UIWindowScene` first and only fallback to `keyWindow` on older iOS.
+     */
+    internal static var activeWindow: UIWindow? {
+        if #available(iOS 13.0, *) {
+            let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+            let scene = windowScenes.first(where: { $0.activationState == .foregroundActive }) ?? windowScenes.first
+
+            if let window = scene?.windows.first(where: { $0.isKeyWindow }) ?? scene?.windows.first {
+                return window
+            }
+        }
+
+        return UIApplication.shared.keyWindow
+    }
+
+    internal class func topViewController(controller: UIViewController? = UIApplication.activeWindow?.rootViewController) -> UIViewController? {
         if let navigationController = controller as? UINavigationController {
             return topViewController(controller: navigationController.visibleViewController)
         }

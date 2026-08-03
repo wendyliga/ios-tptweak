@@ -1,3 +1,12 @@
+# 4.1.0
+- add SwiftUI support, `TPTweakView` can be placed anywhere a `View` is expected, or presented as a sheet with `tptweak(isPresented:)`
+- add `tptweakShakeToPresent()` to shake to open TPTweak on SwiftUI's `WindowGroup`, where the window is owned by the system
+- add `TPTweakShakeDetector` to listen shake motion on any window, for app that can not replace its own window
+- add `TPTweakShakeDetector.present()` to open TPTweak programmatically from anywhere
+- support scene based app, `TPTweakShakeWindow` now can be built from `UIWindowSceneDelegate` with `init(windowScene:)`
+- resolve window from the active `UIWindowScene` instead of the deprecated `keyWindow`, which returns `nil` on scene based app
+- add `ExampleSwiftUI` sample app and merge both sample apps into `TPTweak.xcodeproj`
+
 # 4.0.0
 - support iOS 26 Liquid Glass on navigation bar and tab bar
 - adopt `UINavigationBarAppearance` for navigation bar styling instead of mutating `UINavigationBar` directly

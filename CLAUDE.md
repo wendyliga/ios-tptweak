@@ -9,12 +9,26 @@ TPTweak is an iOS debugging library (UIKit, Swift) shipped via both SwiftPM and 
 ```bash
 swift build
 swift test --enable-test-discovery --enable-code-coverage
-xed TPTweak.xcworkspace   # open the library + Example app together
+xed TPTweak.xcworkspace    # library + both example apps + tests
+xcodebuild -workspace TPTweak.xcworkspace -scheme TPTweakTests \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' test
 ```
 
-There is no root `.xcodeproj` — `.gitignore` excludes `/*.xcodeproj` by design. The workspace references the SPM package plus `Example/Example.xcodeproj`. CI runs `swift build` / `swift test` only; there is no `xcodebuild` or simulator destination anywhere in the repo.
+`TPTweak.xcworkspace` is the entry point. It holds two roots: the SwiftPM package itself (`group:`) and `TPTweak.xcodeproj`. Opening it gives four schemes — `Example` (UIKit sample), `ExampleSwiftUI` (SwiftUI `WindowGroup` sample), plus `TPTweak` and `TPTweakTests` from the package.
 
-Tests are XCTest, not Swift Testing.
+`TPTweak.xcodeproj` contains **only** the two example app targets. The library is not duplicated as a framework target: the project carries an `XCLocalSwiftPackageReference` with `relativePath = ""` (the repo root), and both apps link the `TPTweak` product through it. So the samples consume the local SwiftPM package and always track the working tree — never a released tag or the pod.
+
+Opening `TPTweak.xcodeproj` on its own also works for running the sample apps, but the package's `TPTweak`/`TPTweakTests` schemes are only autocreated there and `xcodebuild` cannot resolve a destination for them — the package and the project share a directory, so a scheme's `container:` is ambiguous. **Run tests through the workspace.**
+
+`.gitignore` still excludes `/*.xcodeproj` but negates `!/TPTweak.xcodeproj`; that exclusion is for stray generated projects, so don't drop the negation.
+
+Both app targets use `PBXFileSystemSynchronizedRootGroup` (objectVersion 77) — files are picked up from the directory automatically. **Adding a Swift file needs no `project.pbxproj` edit.** For the same reason the sample apps have no `Info.plist` on disk; they rely on `GENERATE_INFOPLIST_FILE` plus `INFOPLIST_KEY_*` settings. Dropping a `.plist` into a synchronized directory would get copied in as a resource.
+
+Deployment target is 15.0 everywhere in the xcodeproj — Xcode 27 refuses anything below 15.0. That is unrelated to, and deliberately looser than, the iOS 10/11 floors in `Package.swift` / the podspec; when the apps build the package, SwiftPM raises it to the app's 15.0.
+
+Tests are XCTest, not Swift Testing. Every test file is wrapped in `#if canImport(UIKit)`, so `swift test` on macOS compiles and runs **zero** tests and still reports success — to actually exercise them, run the `TPTweakTests` scheme against a simulator. CI only runs `swift build` / `swift test`, so it does not run these tests either.
+
+The `TPTweakTests` scheme lives in `.swiftpm/xcode/xcshareddata/xcschemes/` (it belongs to the package, not the project) — keep it tracked or the scheme disappears from the workspace.
 
 ## Versioning
 
@@ -27,7 +41,7 @@ Tests are XCTest, not Swift Testing.
 | `README.md` | `.package(url: ..., from: "<version>")` |
 | `README.md` | `pod 'TPTweak', '~> <version>'` |
 
-`Example/` does **not** carry a TPTweak version — it links the library as a local SPM product through the workspace, so it always tracks the working tree. Its `MARKETING_VERSION = 1.0` is the sample app's own version; leave it alone. `Package.swift` has no version literal either (SPM resolves from git tags).
+`Example/` does **not** carry a TPTweak version — it links the root package through a local package reference, so it always tracks the working tree. The `MARKETING_VERSION = 1.0` on both app targets in `TPTweak.xcodeproj` is deliberately **not** the library version — keeping the real version out of the xcodeproj is what stops it becoming a fifth place to drift. `Package.swift` has no version literal either (SPM resolves from git tags).
 
 Git tags are bare version numbers with **no `v` prefix** (`4.0.0`, not `v4.0.0`) — the podspec uses `:tag => "#{spec.version}"`, so the tag must equal the podspec version exactly.
 

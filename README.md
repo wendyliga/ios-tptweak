@@ -27,13 +27,13 @@ https://github.com/tokopedia/ios-tptweak
 
 or manually add to your `Package.swift`
 ```swift
-.package(url: "https://github.com/tokopedia/ios-tptweak", from: "4.0.0"),
+.package(url: "https://github.com/tokopedia/ios-tptweak", from: "4.1.0"),
 ```
 
 ## Cocoapods
 add this to your `Podfile`
 ```
-pod 'TPTweak', '~> 4.0.0'
+pod 'TPTweak', '~> 4.1.0'
 ```
 
 # Development
@@ -161,6 +161,28 @@ self.present(tptweakWithNav)
 ```
 
 ### Shake (Recommended)
+
+On a scene based app, the window belongs to the scene, so build it on your `UIWindowSceneDelegate`. Recent iOS SDKs refuse to launch an app that has not adopted the scene life cycle, so this is the setup you want.
+
+```swift
+internal final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    internal var window: UIWindow?
+
+    internal func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+
+        // register TPTweakShakeWindow to enable openning TPTweak from shaking the device
+        let window = TPTweakShakeWindow(windowScene: windowScene)
+        window.rootViewController = ...
+        window.makeKeyAndVisible()
+
+        self.window = window
+    }
+}
+```
+
+On an older app that still owns the window on `AppDelegate`:
+
 ```swift
 @UIApplicationMain
 internal final class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -174,6 +196,44 @@ internal final class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 
 ```
+
+If you can not replace the window at all, `TPTweakShakeDetector.start()` listens to the shake motion on whatever window your app already has. That is what the SwiftUI setup below uses.
+
+## SwiftUI
+
+`TPTweakShakeWindow` requires you to create the app's window yourself, which is not possible on SwiftUI's `WindowGroup` since the window is owned by the system. Use `tptweakShakeToPresent()` instead, it listens to the shake motion on the window, so it works on any app lifecycle.
+
+```swift
+@main
+internal struct MyApp: App {
+    internal init() {
+        TPTweakEntry.enableTracking.register()
+    }
+
+    internal var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .tptweakShakeToPresent()
+        }
+    }
+}
+```
+
+TPTweak page is also available as a `View`, either through the `tptweak(isPresented:)` sheet modifier, or by placing `TPTweakView` yourself.
+
+```swift
+ContentView()
+    .tptweak(isPresented: $isTweakPresented)
+
+// or place it anywhere a `View` is expected
+NavigationLink("Tweaks") {
+    TPTweakView()
+}
+```
+
+To open it programmatically from anywhere, use `TPTweakShakeDetector.present()`.
+
+`.action` entry pushes into TPTweak's own navigation stack, wrap your SwiftUI view on `UIHostingController` to push it. See `Example/ExampleSwiftUI` for a working app.
 
 ## Use TPTweak Value
 Once your TPTweakEntry is set, you can get and set a value from it.

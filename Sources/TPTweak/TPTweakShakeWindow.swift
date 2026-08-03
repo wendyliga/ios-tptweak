@@ -44,6 +44,27 @@ public class TPTweakShakeWindow: UIWindow {
     override public init(frame: CGRect) {
         super.init(frame: frame)
 
+        setup()
+    }
+
+    /**
+     Use this on scene based app, from `UIWindowSceneDelegate`.
+
+     ```swift
+     func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
+         guard let windowScene = scene as? UIWindowScene else { return }
+         window = TPTweakShakeWindow(windowScene: windowScene)
+     }
+     ```
+     */
+    @available(iOS 13.0, *)
+    override public init(windowScene: UIWindowScene) {
+        super.init(windowScene: windowScene)
+
+        setup()
+    }
+
+    private func setup() {
         active = true
         shakeEnabled = true
 

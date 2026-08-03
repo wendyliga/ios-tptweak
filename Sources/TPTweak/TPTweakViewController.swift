@@ -594,7 +594,7 @@ extension TPTweakViewController {
         bubble.addGestureRecognizer(tap)
 
         // show
-        UIApplication.shared.keyWindow?.addSubview(bubble)
+        UIApplication.activeWindow?.addSubview(bubble)
     }
     
     private static func destroyBubble() {
@@ -644,7 +644,7 @@ extension TPTweakViewController {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     if let bubbleView = __bubbleView {
                         bubbleView.removeFromSuperview()
-                        UIApplication.shared.keyWindow?.addSubview(bubbleView)
+                        UIApplication.activeWindow?.addSubview(bubbleView)
                     }
                 }
             }

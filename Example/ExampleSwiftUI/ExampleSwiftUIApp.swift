@@ -1,4 +1,4 @@
-// Copyright 2022-2024 Tokopedia. All rights reserved.
+// Copyright 2022-2025 Tokopedia. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import SwiftUI
 import TPTweak
-import UIKit
 
-@UIApplicationMain
-internal final class AppDelegate: UIResponder, UIApplicationDelegate {
-    internal func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+@main
+internal struct ExampleSwiftUIApp: App {
+    internal init() {
         // register TPTweak Entry
         TPTweakEntry.enableTracking.register()
         TPTweakEntry.trackingTimeout.register()
@@ -25,18 +25,14 @@ internal final class AppDelegate: UIResponder, UIApplicationDelegate {
         TPTweakEntry.trackingServerLocation.register()
         TPTweakEntry.trackingUsingLocale.register()
         TPTweakEntry.changeLanguage.register()
-
-        return true
     }
 
-    internal func application(
-        _: UIApplication,
-        configurationForConnecting connectingSceneSession: UISceneSession,
-        options _: UIScene.ConnectionOptions
-    ) -> UISceneConfiguration {
-        let configuration = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
-        configuration.delegateClass = SceneDelegate.self
-
-        return configuration
+    internal var body: some Scene {
+        WindowGroup {
+            ContentView()
+                // `WindowGroup`'s window is owned by SwiftUI, so `TPTweakShakeWindow` can not be used,
+                // this listen to the shake motion on the window instead.
+                .tptweakShakeToPresent()
+        }
     }
 }
